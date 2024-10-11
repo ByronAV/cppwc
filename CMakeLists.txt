@@ -5,18 +5,13 @@ project(cppwc)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Include FetchContent module
-include(FetchContent)
+# Find the Boost library with the Program Options component
+find_package(Boost 1.70 REQUIRED COMPONENTS program_options)
 
-#Fetch cxxopts
-FetchContent_Declare(
-    cxxopts
-    GIT_REPOSITORY https://github.com/jarro2783/cxxopts.git
-    GIT TAG        v3.2.0
-)
-
-# Make the cxxopts available
-FetchContent_MakeAvailable(cxxopts)
+# Check if Boost was found
+if(NOT Boost_FOUND)
+    message(FATAL_ERROR "Boost not found. Please install Boost.")
+endif()
 
 # Specify include directory
 include_directories(include)
@@ -29,5 +24,8 @@ set(SOURCES
 # Add executable with source files
 add_executable(cppwc ${SOURCES})
 
-# Link external libraries
-target_link_libraries(cppwc PRIVATE cxxopts)
+# Link the Boost::program_options library to your target
+target_link_libraries(cppwc PRIVATE Boost::program_options)
+
+# Optionally, include Boost's headers
+target_include_directories(cppwc PRIVATE ${Boost_INCLUDE_DIRS})

@@ -1,35 +1,79 @@
 #include <stdexcept>
 #include <iostream>
-#include <cxxopts.hpp>
+#include <boost/program_options.hpp>
 
 #include "WordCount.hpp"
 
 
+namespace po = boost::program_options;
+
 int main(int argc, char* argv[]) {
     try {
-        // if (argc < 2) {
-        //     throw std::runtime_error("ERROR: Expected at least a flag and a file.");
-        // }
+        if (argc < 2) {
+            throw std::runtime_error("ERROR: Expected at least a flag and a file.");
+        }
 
-        cxxopts::Options options("cppwc", "Word Count tool");
+        po::options_description desc("--------------- CPP Word Count Tool ---------------\n");
 
-        options.add_options()
-            ("h, help", "Print help")
-            ("c, bytes", "Outputs the number of bytes in a file.", cxxopts::value<std::string>())
+        desc.add_options()
+            ("help,h", "Print help")
+            ("byte,c", "Outputs the number of bytes in a file.")
+            ("line,l", "Outputs the number of lines in a file")
+            ("word,w", "Outputs the number of words in a file")
+            ("char,m", "Outputs the number of characters in a file")
+            ("file,f", po::value<std::string>(), "The input file")
             ;
 
-        auto result = options.parse(argc, argv);
-        if (result.count("help")) {
-            std::cout << " ----------- Word count tool: -----------\n"
-                      << " - help(h): Prints help message\n"
-                      << " - bytes(c): Prints the bytes in a file\n" << std::endl;
+        po::positional_options_description p;
+        p.add("file", -1);
+
+        po::variables_map vm;
+        po::store(po::command_line_parser(argc, argv).
+                    options(desc).positional(p).run(), vm);
+        po::notify(vm);
+        bool only_file = true;  
+
+        if (vm.count("help")) {
+            std::cout << desc << std::endl;
+            return 0;
         }
-        if (result.count("bytes")) {
-            auto byte_count = std::make_unique<WordCount>(result["bytes"].as<std::string>());
-            std::cout << byte_count->GetBytes() << " " << result["bytes"].as<std::string>() << std::endl;
+        if (vm.count("line")) {
+            auto line_count = std::make_unique<WordCount>(vm["file"].as<std::string>());
+            std::cout << line_count->GetLines() << " ";
+            only_file = false;
         }
+        if (vm.count("word")) {
+            auto word_count = std::make_unique<WordCount>(vm["file"].as<std::string>());
+            std::cout << word_count->GetWords() << " ";
+            only_file = false;
+        }
+        if (vm.count("byte")) {
+            auto byte_count = std::make_unique<WordCount>(vm["file"].as<std::string>());
+            std::cout << byte_count->GetBytes() << " ";
+            only_file = false;
+        }
+        if (vm.count("char")) {
+            auto char_count = std::make_unique<WordCount>(vm["file"].as<std::string>());
+            std::cout << char_count->GetChars() << " ";
+            only_file = false;
+        }
+
+        if (only_file) {
+            auto count = std::make_unique<WordCount>(vm["file"].as<std::string>());
+            std::cout << count->GetLines() << " " << count->GetWords() << " " << count->GetBytes() <<
+                            " ";
+        }
+
+         std::cout << vm["file"].as<std::string>() << std::endl;
+
+        return 0;
     }
     catch (const std::runtime_error& e) {
-        std::cerr << e.what() << std::endl;
+        std::cerr << "Error: " << e.what() << std::endl;
+        return 60;
+    }
+    catch (const po::error &ex) {
+        std::cerr << "Error: " << ex.what() << std::endl;
+        return 61;
     }
 }
