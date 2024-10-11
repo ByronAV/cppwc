@@ -64,7 +64,7 @@ int main(int argc, char* argv[]) {
                             " ";
         }
 
-         std::cout << vm["file"].as<std::string>() << std::endl;
+        std::cout << vm["file"].as<std::string>() << std::endl;
 
         return 0;
     }

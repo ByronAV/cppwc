@@ -11,7 +11,7 @@ behaviour as the original tool, meaning it can parse the following commands:
 If the user doesn't provide a known flag and provides only a file, the output of the combined
 `-lwc` will be printed.
 
-# Compiling
+## Compiling
 
 This tool is compiled with CMake in the following manner.
 ```
@@ -22,13 +22,13 @@ cmake ..
 This will create a directory called `build` where the user can execute the
 script.
 
-# Executing
+## Executing
 
 The user can execute the tool in the following way from the command line:
 ```
 cppwc <optional_flags> <filename>
 ```
 
-# Acknowledgments
+## Acknowledgments
 
 This is part of John Cricket's Coding Challenges which can be found [here](https://codingchallenges.fyi/challenges/challenge-wc)
