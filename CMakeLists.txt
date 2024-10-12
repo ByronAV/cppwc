@@ -29,3 +29,30 @@ target_link_libraries(cppwc PRIVATE Boost::program_options)
 
 # Optionally, include Boost's headers
 target_include_directories(cppwc PRIVATE ${Boost_INCLUDE_DIRS})
+
+# Option to build tests
+option(BUILD_TESTING "Enable building tests" OFF)
+
+if(BUILD_TESTING)
+    # Fetch Google Test
+    include(FetchContent)
+    FetchContent_Declare(
+        googletest
+        URL https://github.com/google/googletest/archive/refs/tags/release-1.12.1.zip
+    )
+    FetchContent_MakeAvailable(googletest)
+
+    # Enable testing framework
+    enable_testing()
+
+    # Add a test executable
+    add_executable(cppwc_test
+        tests/test.cpp
+        src/WordCount.cpp)
+
+    # Link Google Test with the test executable
+    target_link_libraries(cppwc_test gtest gtest_main Boost::program_options)
+
+    # Register the test
+    add_test(NAME Test COMMAND cppwc_test)
+endif()
