@@ -23,10 +23,6 @@ jobs:
                 find . -name "*.cpp" -o -name "*.h" | xargs clang-format -i
                 git diff --exit-code
               continue-on-error: true # Don't stop the pipeline on error
-            
-            - name: Report formatting issues
-              if: failure() # Show warning if formatting is not correct
-              run: echo "WARNING Code formatting issues detected."
     
     build:
         name: Build Project
@@ -36,14 +32,22 @@ jobs:
               uses: actions/checkout@v4
 
             - name: Install dependencies
-              run: sudo apt-get update && sudo apt-get install -y build-essential cmake
-              
+              run: |
+                sudo apt-get update
+                sudo apt-get install -y build-essential cmake libboost-all-dev  # Install Boost
+
             - name: Build project with CMake
               run: |
                 mkdir -p build
                 cd build
                 cmake ..
                 make
+            
+            - name: Upload build artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                name: build
+                path: build
 
     test:
         name: Run Tests
@@ -52,6 +56,11 @@ jobs:
         steps:
           - name: Checkout code
             uses: actions/checkout@v4
+
+          - name: Download build artifacts
+            uses: actions/download-artifact@v4
+            with:
+              name: build
 
           - name: Build for test
             run: |
