@@ -16,7 +16,7 @@ jobs:
             - name: Run clang-format
               run: |
                 clang-format --version
-                find . -name "*.cpp" -o -name "*.h" | xargs clang-format -i
+                find . -name "*.cpp" -o -name "*.hpp" | xargs clang-format -style=google -i
                 git diff --exit-code
               continue-on-error: true # Don't stop the pipeline on error
     
