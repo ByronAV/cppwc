@@ -1,10 +1,6 @@
 name: Format, Build and Test
 
-
-on:
-    push:
-        branches:
-            - main
+on: [push, pull_request]
 
 jobs:
     format-check:
@@ -60,11 +56,11 @@ jobs:
           - name: Download build artifacts
             uses: actions/download-artifact@v4
             with:
-              name: build
+                name: build
 
           - name: Build for test
             run: |
-              cd build
+              ls -lah
               cmake -DBUILD_TESTING=ON ..
               make
               ./cppwc_test
