@@ -57,10 +57,11 @@ jobs:
             uses: actions/download-artifact@v4
             with:
                 name: build
+                path: build
 
           - name: Build for test
             run: |
-              ls -lah
+              cd build
               cmake -DBUILD_TESTING=ON ..
               make
               ./cppwc_test
