@@ -11,6 +11,22 @@ WordCount::WordCount(const std::string& filename) : input_file(filename) {
   }
 }
 
+WordCount::WordCount(std::stringstream& ss) {
+  // Temp file that will hold the data 
+  // of cin
+  const char* temp_file = "temp.txt";
+  std::ofstream temp(temp_file, std::ios::binary);
+
+  if (!temp) {
+    throw std::runtime_error("ERROR: Could not open temp file.");
+  }
+
+  temp << ss.rdbuf();
+  input_file.open(temp_file, std::ios::binary);
+  temp.close();
+  std::remove(temp_file);
+}
+
 int WordCount::GetBytes() {
   input_file.seekg(0, std::ios::end);  // Move to end to calculate size
   int size = input_file.tellg();       // Get the size of the file in bytes
